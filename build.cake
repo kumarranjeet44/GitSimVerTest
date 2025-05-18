@@ -127,8 +127,16 @@ Task("Tagmaster").Does(() => {
     Information("Task is running by automation pipeline.");
     Information("Running inside GitHub Actions.");
     Information("GitVersion details: {0}", JsonConvert.SerializeObject(gitVersion, Formatting.Indented));
+
+    //List and check existing tags
+    Information("Previous Releases:");
+    var currentTags = GitTags(".");
+    foreach(var tag in currentTags)
+    {
+        Information(tag.FriendlyName);
+    }
     //comment below line to consider all branches
-    if(gitVersion.BranchName != "master" && gitVersion.BranchName != "develop")
+    if (gitVersion.BranchName != "master" && gitVersion.BranchName != "develop")
     {
         Information($"Current branch '{gitVersion.BranchName}' is not master or develop. Skipping tagging.");
         return;
@@ -138,13 +146,7 @@ Task("Tagmaster").Does(() => {
     {
         throw new Exception("Git Username/Password not provided to automation script.");
     }
-    //List and check existing tags
-    Information("Previous Releases:");
-    var currentTags = GitTags(".");
-    foreach(var tag in currentTags)
-    {
-        Information(tag.FriendlyName);
-    }
+
     string branchTag;
     if (gitVersion.BranchName == "master")
     {
